@@ -56,9 +56,9 @@ class AuthRepository implements AuthRepositoryInterface
             $tenantData = [
                 'user_id' => $user->id,
                 'occupation' => $data['occupation'] ?? '',
-                'leased_duration' => $data['leased_duration'],
-                'no_of_occupants' => $data['no_of_occupants'],
-                'last_status' => $data['last_status'],
+                'leased_duration' => $data['leased_duration'] ?? '',
+                'no_of_occupants' => $data['no_of_occupants'] ?? '',
+                'last_status' => $data['last_status'] ?? 0,
             ];
 
             if ($data['last_status'] == 1) {
@@ -71,24 +71,20 @@ class AuthRepository implements AuthRepositoryInterface
 
             Tenant::create($tenantData);
         }elseif($data['role'] === 'service_provider') {
-            if ($data['services'] && $data['year_experience'] && $data['availability_start_time'] && $data['availability_end_time'] && $data['certification']) {
-                $cnic = $this->saveCNIC($data);
-                $user->cnic_front = $cnic['cnic_front'];
-                $user->cnic_back = $cnic['cnic_back'];
-                $user->services()->attach($data['services']);
-                $user->year_experience = $data['year_experience'];
-                $user->availability_start_time = $data['availability_start_time'];
-                $user->availability_end_time = $data['availability_end_time'];
+            $cnic = $this->saveCNIC($data);
+            $user->cnic_front = $cnic['cnic_front'];
+            $user->cnic_back = $cnic['cnic_back'];
+            $user->services()->attach($data['services'] ?? []);
+            $user->year_experience = $data['year_experience'];
+            $user->availability_start_time = $data['availability_start_time'];
+            $user->availability_end_time = $data['availability_end_time'];
 
-                if ($data['certification'] == 'yes') {
-                    $user->file  = $this->saveCertification($data);
-                    
-                }
-
-                $user->save();
-            } else {
-                throw new Exception('All Fields are required');
+            if ($data['certification'] == 'yes') {
+                $user->file  = $this->saveCertification($data);
+                
             }
+
+            $user->save();
         }
 
         Mail::to($user->email)->send(new VerifyEmail($user));

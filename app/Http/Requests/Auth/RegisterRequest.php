@@ -38,7 +38,16 @@ class RegisterRequest extends FormRequest
 
             'occupation' => 'required_if:role,tenant',
             'leased_duration' => 'required_if:role,tenant',
-            'no_of_occupants' => 'required_if:role,tenant'
+            'no_of_occupants' => 'required_if:role,tenant',
+
+            'services' => 'required_if:role,service_provider|array',
+            'year_experience' => 'required_if:role,service_provider',
+            'availability_start_time' => 'required_if:role,service_provider',
+            'availability_end_time' => 'required_if:role,service_provider',
+            'certification' => 'required_if:role,service_provider',
+            'cnic_front' => 'required_if:role,service_provider',
+            'cnic_back' => 'required_if:role,service_provider',
+            
         ];
     }
 
