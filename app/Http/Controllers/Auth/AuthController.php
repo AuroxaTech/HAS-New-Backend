@@ -22,8 +22,12 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        $user = $this->authRepository->create($request->validated());
-        return $this->sendResponse($user, 'User register successfully');
+        try {
+            $user = $this->authRepository->create($request->validated());
+            return $this->sendResponse($user, 'User register successfully');
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, $th->getMessage());
+        }
     }
 
     public function login(LoginRequest $request)

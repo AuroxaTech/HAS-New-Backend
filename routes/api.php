@@ -13,7 +13,7 @@ use App\Http\Controllers\{
     ContractController,
 };
 
-Route::post('/register', [authController::class, 'register']);
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 

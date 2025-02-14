@@ -3,16 +3,21 @@
 namespace App\Repositories\Auth;
 
 use App\Models\User;
+use App\Models\Property;
+use App\Models\Tenant;
 use App\Interfaces\Auth\AuthRepositoryInterface;
 use App\Helpers\ImageUpload;
+use App\Helpers\UserRegistration;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use App\Mail\VerifyEmail;
+use Exception;
 use Auth;
 use Mail;
-use App\Mail\VerifyEmail;
 
 class AuthRepository implements AuthRepositoryInterface
 {
-    use ImageUpload;
+    use ImageUpload, UserRegistration;
 
     public function create(array $data)
     {
@@ -27,13 +32,71 @@ class AuthRepository implements AuthRepositoryInterface
             'device_token' => $data['device_token'],
             'address' => $data['address'],
             'postal_code' => $data['postal_code'],
+            'verification_token' => Str::random(64)
         ];
 
         if (isset($data['profile_image'])) {
             $image = $this->uploadImage($data['profile_image'], 'profile_images');
             $userData['profile_image'] = $image['url'];
         }
+
         $user = User::create($userData);
+
+        // TODO: save roles to constants
+        // TODO: save messages to constants files
+        if ($data['role_id'] == 1) {
+            if ($data['type'] && $data['city'] && $data['amount'] && $data['address'] && $data['lat'] && $data['long'] && $data['area_range'] && $data['bedroom'] && $data['bathroom']) {
+                $billImage = $this->saveBill($data);
+                $propertyImages = $this->savePropertyImages($data);
+                $data['user_id'] = $user->id;
+                $data['images'] = $propertyImages;
+                $data['electricity_bill'] = $billImage;
+
+                Property::create($data);
+            }
+        }elseif($data['role_id'] == 2) {
+            if ($data['occupation'] && $data['leased_duration'] && $data['no_of_occupants']) {
+                $tenantData = [
+                    'user_id' => $user->id,
+                    'occupation' => $data['occupation'],
+                    'leased_duration' => $data['leased_duration'],
+                    'no_of_occupants' => $data['no_of_occupants'],
+                    'last_status' => $data['last_status'],
+                ];
+
+                if ($data['last_status'] == 1) {
+                    $tenantData = array_merge($tenantData, [
+                        'last_tenancy' => $data['last_tenancy'],
+                        'last_landlord_name' => $data['last_landlord_name'],
+                        'last_landlord_contact' => $data['last_landlord_contact'],
+                    ]);
+                }
+
+                Tenant::create($tenantData);
+            } else {
+                throw new Exception('Invalid data');
+            }
+        }elseif($data['role_id'] === 3) {
+            if ($data['services'] && $data['year_experience'] && $data['availability_start_time'] && $data['availability_end_time'] && $data['certification']) {
+                $cnic = $this->saveCNIC($data);
+                $user->cnic_front = $cnic['cnic_front'];
+                $user->cnic_back = $cnic['cnic_back'];
+                $user->services()->attach($data['services']);
+                $user->year_experience = $data['year_experience'];
+                $user->availability_start_time = $data['availability_start_time'];
+                $user->availability_end_time = $data['availability_end_time'];
+
+                if ($data['certification'] == 'yes') {
+                    $user->file  = $this->saveCertification($data);
+                    
+                }
+
+                $user->save();
+            } else {
+                throw new Exception('All Fields are required');
+            }
+        }
+
         Mail::to($user->email)->send(new VerifyEmail($user));
         return $user;
     }
