@@ -44,7 +44,7 @@ class AuthRepository implements AuthRepositoryInterface
 
         // TODO: save roles to constants
         // TODO: save messages to constants files
-        if ($data['role_id'] == 1) {
+        if ($data['role'] == 'landlord') {
             if ($data['type'] && $data['city'] && $data['amount'] && $data['address'] && $data['lat'] && $data['long'] && $data['area_range'] && $data['bedroom'] && $data['bathroom']) {
                 $billImage = $this->saveBill($data);
                 $propertyImages = $this->savePropertyImages($data);
@@ -54,7 +54,7 @@ class AuthRepository implements AuthRepositoryInterface
 
                 Property::create($data);
             }
-        }elseif($data['role_id'] == 2) {
+        }elseif($data['role'] == 'tenant') {
             if ($data['occupation'] && $data['leased_duration'] && $data['no_of_occupants']) {
                 $tenantData = [
                     'user_id' => $user->id,
@@ -76,7 +76,7 @@ class AuthRepository implements AuthRepositoryInterface
             } else {
                 throw new Exception('Invalid data');
             }
-        }elseif($data['role_id'] === 3) {
+        }elseif($data['role'] === 'service_provider') {
             if ($data['services'] && $data['year_experience'] && $data['availability_start_time'] && $data['availability_end_time'] && $data['certification']) {
                 $cnic = $this->saveCNIC($data);
                 $user->cnic_front = $cnic['cnic_front'];

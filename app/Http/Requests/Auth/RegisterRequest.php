@@ -18,7 +18,7 @@ class RegisterRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users',
             'user_name' => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|string|max:50',
+            'role' => 'required|string|max:50|enum:admin,user,tenant,service_provider,landlord',
             'phone_number' => 'required|string|max:15',
             'device_token' => 'required|string',
             'platform' => 'required|string|max:50',
