@@ -45,37 +45,31 @@ class AuthRepository implements AuthRepositoryInterface
         // TODO: save roles to constants
         // TODO: save messages to constants files
         if ($data['role'] == 'landlord') {
-            if ($data['type'] && $data['city'] && $data['amount'] && $data['address'] && $data['lat'] && $data['long'] && $data['area_range'] && $data['bedroom'] && $data['bathroom']) {
-                $billImage = $this->saveBill($data);
-                $propertyImages = $this->savePropertyImages($data);
-                $data['user_id'] = $user->id;
-                $data['images'] = $propertyImages;
-                $data['electricity_bill'] = $billImage;
+            $billImage = $this->saveBill($data);
+            $propertyImages = $this->savePropertyImages($data);
+            $data['user_id'] = $user->id;
+            $data['images'] = $propertyImages;
+            $data['electricity_bill'] = $billImage;
 
-                Property::create($data);
-            }
+            Property::create($data);
         }elseif($data['role'] == 'tenant') {
-            if ($data['occupation'] && $data['leased_duration'] && $data['no_of_occupants']) {
-                $tenantData = [
-                    'user_id' => $user->id,
-                    'occupation' => $data['occupation'],
-                    'leased_duration' => $data['leased_duration'],
-                    'no_of_occupants' => $data['no_of_occupants'],
-                    'last_status' => $data['last_status'],
-                ];
+            $tenantData = [
+                'user_id' => $user->id,
+                'occupation' => $data['occupation'] ?? '',
+                'leased_duration' => $data['leased_duration'],
+                'no_of_occupants' => $data['no_of_occupants'],
+                'last_status' => $data['last_status'],
+            ];
 
-                if ($data['last_status'] == 1) {
-                    $tenantData = array_merge($tenantData, [
-                        'last_tenancy' => $data['last_tenancy'],
-                        'last_landlord_name' => $data['last_landlord_name'],
-                        'last_landlord_contact' => $data['last_landlord_contact'],
-                    ]);
-                }
-
-                Tenant::create($tenantData);
-            } else {
-                throw new Exception('Invalid data');
+            if ($data['last_status'] == 1) {
+                $tenantData = array_merge($tenantData, [
+                    'last_tenancy' => $data['last_tenancy'],
+                    'last_landlord_name' => $data['last_landlord_name'],
+                    'last_landlord_contact' => $data['last_landlord_contact'],
+                ]);
             }
+
+            Tenant::create($tenantData);
         }elseif($data['role'] === 'service_provider') {
             if ($data['services'] && $data['year_experience'] && $data['availability_start_time'] && $data['availability_end_time'] && $data['certification']) {
                 $cnic = $this->saveCNIC($data);
