@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\UpdatePasswordRequest;
 use App\Interfaces\Auth\AuthRepositoryInterface;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -22,10 +23,14 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
+        DB::beginTransaction();
         try {
             $user = $this->authRepository->create($request->validated());
+            DB::commit();
             return $this->sendResponse($user, 'User register successfully');
         } catch (\Throwable $th) {
+            DB::rollback();
+
             return $this->sendResponse(null, $th->getMessage());
         }
     }
