@@ -4,52 +4,48 @@ namespace App\Helpers;
 
 use Illuminate\Support\Facades\File;
 use Exception;
-use Image;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager as Image;
+// use Intervention\Image\ImageManagerStatic as Image;
+
 
 trait UserRegistration
 {
     public function saveBill($data) 
     {
-        if ($data['electricity _bill']) {
-            $electricity_bill = $data['electricity_bill'];
-            $billimage = 'ElectricityBill-' . uniqid() . '-' . $electricity_bill->getClientOriginalName();
-            $filePath = public_path('/assets/electricity_bill');
+        $electricity_bill = $data['electricity_bill'];
+        $billimage = 'ElectricityBill-' . uniqid() . '-' . $electricity_bill->getClientOriginalName();
+        $filePath = '/assets/electricity_bill';
 
-            if (!File::isDirectory($filePath)) {
-                File::makeDirectory($filePath, 0777, true, true);
-            }
-
-            $billimg = Image::make($electricity_bill->getRealPath());
-            $billimg->save($filePath . '/' . $billimage);
-            return $billimage;
-        } else {
-            throw new Exception('Electricity Bill Required');
+        if (!File::isDirectory($filePath)) {
+            File::makeDirectory($filePath, 0777, true, true);
         }
+        // $manager = new Image();
+        // $billimg = $manager->make($electricity_bill->getRealPath());
+        // $electricity_bill->storeAs($filePath . '/' . $billimage, 'local');
+        $link = Storage::disk('local')->put($filePath, $electricity_bill);
+        return asset($link);
     }
 
     public function savePropertyImages($data) 
     {
-        if (isset($data['property_images'])) {
-            $files = $data['property_images'];
-            $file_names = [];
+        $files = $data['property_images'];
+        $file_names = [];
 
-            foreach ($files as $file) {
-                $file_image = 'File-' . uniqid() . '-' . $file->getClientOriginalName();
-                $filefilePath = public_path('/assets/property_images');
+        foreach ($files as $file) {
+            $file_image = 'File-' . uniqid() . '-' . $file->getClientOriginalName();
+            $filefilePath = public_path('/assets/property_images');
 
-                if (!File::isDirectory($filefilePath)) {
-                    File::makeDirectory($filefilePath, 0777, true, true);
-                }
-
-                $fileimg = Image::make($file->getRealPath());
-                $fileimg->save($filefilePath . '/' . $file_image);
-                $file_names[] = $file_image;
+            if (!File::isDirectory($filefilePath)) {
+                File::makeDirectory($filefilePath, 0777, true, true);
             }
-
-            return implode(',', $file_names);
-        } else {
-            throw new Exception('Property Image Required');
+            $link = Storage::disk('local')->put($filefilePath, $file);
+            // $fileimg = Image::make($file->getRealPath());
+            // $file->storeAs($filefilePath . '/' . $file_image, 'local');
+            $file_names[] = asset($link);
         }
+
+        return implode(',', $file_names);
     }
 
     public function saveCertification($data)
@@ -61,11 +57,11 @@ trait UserRegistration
         if (!File::isDirectory($certificationfilefilePath)) {
             File::makeDirectory($certificationfilefilePath, 0777, true, true);
         }
+        $link = Storage::disk('local')->put($certificationfilefilePath, $certificationfile);
+        // $certificationfileimg = Image::make($certificationfile->getRealPath()); // Corrected $file to $certificationfile
+        // $certificationfileimg->save($certificationfilefilePath . '/' . $certificationfileimage);
 
-        $certificationfileimg = Image::make($certificationfile->getRealPath()); // Corrected $file to $certificationfile
-        $certificationfileimg->save($certificationfilefilePath . '/' . $certificationfileimage);
-
-        return $certificationfileimage;
+        return $link;
     }
 
     public function saveCNIC($data)
@@ -80,8 +76,9 @@ trait UserRegistration
                 File::makeDirectory($cnic_frontfilefilePath, 0777, true, true);
             }
 
-            $cnic_frontfileimg = Image::make($cnic_frontfile->getRealPath()); // Corrected $file to $cnic_frontfile
-            $cnic_frontfileimg->save($cnic_frontfilefilePath . '/' . $cnic_frontfileimage);
+            // $cnic_frontfileimg = Image::make($cnic_frontfile->getRealPath()); // Corrected $file to $cnic_frontfile
+            // $cnic_frontfileimg->save($cnic_frontfilefilePath . '/' . $cnic_frontfileimage);
+            $link = Storage::disk('local')->put($cnic_frontfilefilePath, $cnic_frontfile);
             $cnic_front_file_name = $cnic_frontfileimage;
 
             // Cnic Back
@@ -93,9 +90,10 @@ trait UserRegistration
                 File::makeDirectory($cnic_backfilefilePath, 0777, true, true);
             }
 
-            $cnic_backfileimg = Image::make($cnic_backfile->getRealPath()); // Corrected $file to $cnic_backfile
-            $cnic_backfileimg->save($cnic_backfilefilePath . '/' . $cnic_backfileimage);
-            $cnic_back_file_name = $cnic_backfileimage;   
+            // $cnic_backfileimg = Image::make($cnic_backfile->getRealPath()); // Corrected $file to $cnic_backfile
+            // $cnic_backfileimg->save($cnic_backfilefilePath . '/' . $cnic_backfileimage);
+            $link = Storage::disk('local')->put($cnic_backfilefilePath, $cnic_backfile);
+            $cnic_back_file_name = $link;   
 
             return [
                 'cnic_front' => $cnic_front_file_name,

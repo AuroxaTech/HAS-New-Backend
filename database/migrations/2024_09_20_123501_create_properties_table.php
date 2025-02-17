@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('area_range');
             $table->integer('bedroom');
             $table->integer('bathroom');
-            $table->text('description');
-            $table->string('electricity_bill_image');
+            $table->text('description')->nullable();
+            $table->string('electricity_bill');
             $table->string('property_type');
             $table->string('property_sub_type');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');

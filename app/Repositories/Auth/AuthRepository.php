@@ -11,8 +11,10 @@ use App\Helpers\UserRegistration;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Mail\VerifyEmail;
+use App\Models\Service;
 use Exception;
 use Auth;
+use Illuminate\Support\Facades\Storage;
 use Mail;
 
 class AuthRepository implements AuthRepositoryInterface
@@ -61,7 +63,7 @@ class AuthRepository implements AuthRepositoryInterface
                 'last_status' => $data['last_status'] ?? 0,
             ];
 
-            if ($data['last_status'] == 1) {
+            if (isset($data['last_status']) && $data['last_status'] == 1) {
                 $tenantData = array_merge($tenantData, [
                     'last_tenancy' => $data['last_tenancy'],
                     'last_landlord_name' => $data['last_landlord_name'],
@@ -71,17 +73,23 @@ class AuthRepository implements AuthRepositoryInterface
 
             Tenant::create($tenantData);
         }elseif($data['role'] === 'service_provider') {
+            // $user->services()->sync($data['services'] ?? []);
+            // do this for each service
             $cnic = $this->saveCNIC($data);
-            $user->cnic_front = $cnic['cnic_front'];
-            $user->cnic_back = $cnic['cnic_back'];
-            $user->services()->attach($data['services'] ?? []);
-            $user->year_experience = $data['year_experience'];
-            $user->availability_start_time = $data['availability_start_time'];
-            $user->availability_end_time = $data['availability_end_time'];
+
+            foreach ($data['services'] as $service) {
+                $data['service_name'] = $service;
+                $data['user_id'] = $user->id;
+                $data['cnic_front_pic'] = $cnic['cnic_front'];
+                $data['cnic_back_pic'] = $cnic['cnic_back'];;
+                $data['start_time'] = $data['availability_start_time'];
+                $data['end_time'] = $data['availability_end_time'];
+                
+                $service = Service::create($data);
+            }
 
             if ($data['certification'] == 'yes') {
-                $user->file  = $this->saveCertification($data);
-                
+                $user->certification  = $this->saveCertification($data);
             }
 
             $user->save();

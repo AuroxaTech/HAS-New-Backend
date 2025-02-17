@@ -12,7 +12,7 @@ class Property extends Model
     protected $fillable = [
         'type', 'city', 'amount', 'address', 'lat', 'long', 
         'area_range', 'bedroom', 'bathroom', 'description', 
-        'electricity_bill_image', 'property_type', 'property_sub_type', 'user_id'
+        'electricity_bill', 'property_type', 'property_sub_type', 'user_id'
     ];
     
     public function user()
