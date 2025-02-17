@@ -24,7 +24,7 @@ class RegisterRequest extends FormRequest
             'platform' => 'required|string|max:50',
             'address' => 'required|string|max:255',
             'postal_code' => 'required|string|max:25|regex:/^\d{1,25}$/',
-            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
 
             'type' => 'required_if:role,landlord',
             'city' => 'required_if:role,landlord',
@@ -38,9 +38,9 @@ class RegisterRequest extends FormRequest
             'description' => 'required_if:role,landlord',
             'property_type' => 'required_if:role,landlord',
             'property_sub_type' => 'required_if:role,landlord',
-            'electricity_bill' => 'required_if:role,landlord|image|mimes:jpg,jpeg,png|max:2048',
+            'electricity_bill' => 'required_if:role,landlord|image|mimes:jpg,jpeg,png|max:10240',
             'property_images' => 'required_if:role,landlord|array',
-            'property_images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'property_images.*' => 'image|mimes:jpg,jpeg,png|max:10240',
 
             'occupation' => 'required_if:role,tenant',
             'leased_duration' => 'required_if:role,tenant',
@@ -54,9 +54,9 @@ class RegisterRequest extends FormRequest
             'location' => 'required_if:role,service_provider',
             'availability_start_time' => 'required_if:role,service_provider',
             'availability_end_time' => 'required_if:role,service_provider',
-            'certification' => 'required_if:role,service_provider|image|mimes:jpg,jpeg,png|max:2048',
-            'cnic_front' => 'required_if:role,service_provider|image|mimes:jpg,jpeg,png|max:2048',
-            'cnic_back' => 'required_if:role,service_provider|image|mimes:jpg,jpeg,png|max:2048',
+            'certification' => 'required_if:role,service_provider|image|mimes:jpg,jpeg,png|max:10240',
+            'cnic_front' => 'required_if:role,service_provider|image|mimes:jpg,jpeg,png|max:10240',
+            'cnic_back' => 'required_if:role,service_provider|image|mimes:jpg,jpeg,png|max:10240',
             
         ];
     }
