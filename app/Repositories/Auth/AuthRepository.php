@@ -108,9 +108,9 @@ class AuthRepository implements AuthRepositoryInterface
             }
             $success['token'] = $user->createToken('MyApp')->plainTextToken;
             $success['user'] = $user;
-            return response()->json($success, 200);
+            return $success;
         } else {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return false;
         }
     }
 

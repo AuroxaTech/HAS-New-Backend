@@ -32,11 +32,17 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $response = $this->authRepository->login($request->validated());
-        if ($response) {
-            return $this->sendResponse($response, 'user login successfully');
+        try {
+            $response = $this->authRepository->login($request->validated());
+            if ($response) {
+                return $this->sendResponse($response, 'user login successfully');
+            }
+            
+            return $this->sendError('message', ['Invalid Credentials'], 401);
+            
+        } catch (\Throwable $th) {
+            return $this->sendError('message', [$th->getMessage()], 401);
         }
-        return $this->sendResponse('message', 'Authenticated User');
     }
 
     public function updateProfile(Request $request)
