@@ -4,6 +4,7 @@ use App\Models\Property;
 interface PropertyRepositoryInterface
 {
     public function all();
+    public function byRole($role);
     public function find($id);
     public function create(array $data);
     public function update($id, array $data);

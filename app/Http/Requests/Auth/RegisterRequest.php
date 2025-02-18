@@ -54,8 +54,9 @@ class RegisterRequest extends FormRequest
             'location' => 'required_if:role,service_provider',
             'availability_start_time' => 'required_if:role,service_provider',
             'availability_end_time' => 'required_if:role,service_provider',
-            'certification' => 'required_if:role,service_provider|boolean',
+            'certification' => 'nullable',
             'file' => 'required_if:certification,1',
+            'description' => 'required_if:role,service_provider',
             'cnic_front' => 'required_if:role,service_provider|image|mimes:jpg,jpeg,png|max:10240',
             'cnic_back' => 'required_if:role,service_provider|image|mimes:jpg,jpeg,png|max:10240',
             

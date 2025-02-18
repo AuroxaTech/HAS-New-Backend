@@ -16,6 +16,14 @@ class PropertyRepository implements PropertyRepositoryInterface
         return Property::with('propertyImages')->get();
     }
 
+    public function byRole($role)
+    {
+        return Property::with('propertyImages')->whereHas('user', function($query) use($role) {
+            $query->where('role', $role)
+                ->where('user_id', auth()->id());
+        })->get();
+    }
+
     public function find($id)
     {
         return Property::with('propertyImages')->findOrFail($id);

@@ -17,9 +17,14 @@ class PropertyController extends Controller
         $this->propertyRepository = $propertyRepository;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $properties = $this->propertyRepository->all();
+        if($request->query('role')) {
+            $properties = $this->propertyRepository->byRole($request->query('role'));
+        }else{
+            $properties = $this->propertyRepository->all();
+        }
+
         return $this->sendResponse($properties, 'Get all properties successfully');
     }
 
