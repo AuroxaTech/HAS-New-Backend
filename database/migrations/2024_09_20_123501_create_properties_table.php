@@ -20,8 +20,8 @@ return new class extends Migration
             $table->decimal('lat', 10, 8);
             $table->decimal('long', 11, 8);
             $table->string('area_range');
-            $table->integer('bedroom');
-            $table->integer('bathroom');
+            $table->string('bedroom');
+            $table->string('bathroom');
             $table->text('description')->nullable();
             $table->string('electricity_bill');
             $table->string('property_type');
