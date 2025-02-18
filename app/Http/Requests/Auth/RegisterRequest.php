@@ -59,7 +59,7 @@ class RegisterRequest extends FormRequest
             'description' => 'required_if:role,service_provider',
             'cnic_front' => 'required_if:role,service_provider|image|mimes:jpg,jpeg,png|max:10240',
             'cnic_back' => 'required_if:role,service_provider|image|mimes:jpg,jpeg,png|max:10240',
-            
+            'city' => 'required_if:role,service_provider'
         ];
     }
 

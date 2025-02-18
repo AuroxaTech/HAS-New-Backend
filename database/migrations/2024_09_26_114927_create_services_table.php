@@ -20,11 +20,11 @@ return new class extends Migration {
             $table->string('start_time');
             $table->string('end_time');
             $table->string('location');
-            $table->decimal('lat', 10, 7);
-            $table->decimal('long', 10, 7);
+            $table->decimal('lat', 10, 7)->nullable();
+            $table->decimal('long', 10, 7)->nullable();
             $table->text('additional_information')->nullable();
-            $table->string('country');
-            $table->string('city');
+            $table->string('country')->nullable();
+            $table->string('city')->nullable();
             $table->unsignedInteger('year_experience')->default(0);
             $table->string('cnic_front_pic')->nullable();
             $table->string('cnic_back_pic')->nullable();
